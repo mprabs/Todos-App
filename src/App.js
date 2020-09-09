@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
-import Snackbar from './components/snackbar'
 
 function App() {
-  const localTodos = JSON.parse(localStorage.getItem('todos'));
+  let localTodos = JSON.parse(localStorage.getItem('todos'));
+  if(!localTodos) localTodos = "";
 
   const [todos, setTodos] = useState([...localTodos]);
   const [toUpdateTodo, setToUpdateTodo] = useState(false);
