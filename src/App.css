@@ -140,3 +140,7 @@ form input:focus, form button:focus {
     align-items: center;
     flex-direction: column;
 }
+
+.completed__todos .todo__details span {
+    text-decoration: line-through;
+}
