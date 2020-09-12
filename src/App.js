@@ -3,15 +3,23 @@ import './App.css';
 
 function App() {
   let localTodos = JSON.parse(localStorage.getItem('todos'));
+  let localCompletedTodos = JSON.parse(localStorage.getItem('completedTodos'));
+
   if(!localTodos) localTodos = "";
+  if(!localCompletedTodos) localCompletedTodos = "";
 
   const [todos, setTodos] = useState([...localTodos]);
   const [toUpdateTodo, setToUpdateTodo] = useState(false);
   const [updateWalaTodo, setUpdateWalaTodo] = useState([]);
+  const [completedTodos, setCompletedTodos] = useState([...localCompletedTodos]);
 
   useEffect(()=> {
     localStorage.setItem('todos', JSON.stringify(todos))
   }, [todos])
+
+  useEffect(() => {
+    localStorage.setItem('completedTodos', JSON.stringify(completedTodos))
+  }, [completedTodos])
 
   function addTodo(a) {
     a.preventDefault();
@@ -19,7 +27,10 @@ function App() {
     if (!newTodo.value) {
       return;
     }
-    setTodos([...todos, newTodo.value]);
+    setTodos([...todos, {
+      value: newTodo.value,
+      time: getTimeNow()
+    }]);
     newTodo.value = "";
   }
 
@@ -34,9 +45,14 @@ function App() {
     e.preventDefault();
     const updatedValue = document.getElementById("todo").value;
     deleteTodo(updatedValue);
+    const justUpdatedTodo = {
+      value: updatedValue,
+      time: getTimeNow()
+    }
     const newTodos = todos.map((todo) => {
-      return todo === updateWalaTodo ? (todo = updatedValue || updateWalaTodo) : todo;
+      return todo === updateWalaTodo ? (todo = justUpdatedTodo || updateWalaTodo) : todo;
     });
+    console.log(newTodos)
     setTodos([...newTodos]);
     document.getElementById('todo').value = "";
     setToUpdateTodo(false);
@@ -44,8 +60,42 @@ function App() {
   }
 
   function setValue(todo) {
-    document.getElementById("todo").value = todo;
+    document.getElementById("todo").value = todo.value;
     setUpdateWalaTodo(todo);
+    console.log(todo)
+  }
+
+  function completeTodo(todo) {
+    setCompletedTodos([todo, ...completedTodos])
+    deleteTodo(todo);
+  }
+
+  function getTimeNow() {
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var d = new Date();
+    var day = days[d.getDay()];
+    var hr = d.getHours();
+    var min = d.getMinutes();
+    var sec = d.getSeconds();
+    if (min < 10) {
+        min = "0" + min;
+    }
+    var ampm = "am";
+    if( hr > 12 ) {
+        hr -= 12;
+        ampm = "pm";
+    }
+    var month = months[d.getMonth()];
+    var year = d.getFullYear();
+    return `${hr}:${min}:${sec}${ampm}, ${day} (${month}, ${year})`
+  }
+
+  function deleteCompleted(todo) {
+    const todoList = [...completedTodos];
+    const index = todoList.indexOf(todo);
+    todoList.splice(index, 1);
+    setCompletedTodos([...todoList]);
   }
 
   return (
@@ -58,32 +108,70 @@ function App() {
         <input className="input" id="todo" placeholder="Create todo" />
         <button type="submit">
           {toUpdateTodo ? 
-          <i class="fa fa-wrench" aria-hidden="true"></i>
-          : <i class="fa fa-plus" aria-hidden="true"></i>}
+          <i className="fa fa-wrench" aria-hidden="true"></i>
+          : <i className="fa fa-plus" aria-hidden="true"></i>}
         </button>
       </form>
-      {todos &&
-        todos.map((todo) => {
-          return (
-            <div className="todo" key={todo}>
-              <span>{todo}</span>
+      <div className="todos">
+        <div className="pending__todos">
+            {todos.length > 0 && <h3>Pending</h3>}
+            {todos &&
+              todos.map((todo) => {
+                return (
+                  <div className="todo column__todo" key={todo}>
+                  <div className="todo__details">
+                    <pre>Created at {todo.time}</pre>
+                    <span>{todo.value}</span>
+                  </div>
+                    <div className="buttons">
+                      <button onClick={() => {completeTodo(todo)}}>
+                        <i className="fa fa-check" aria-hidden="true"></i>
+                      </button>
+                      
+                      { updateWalaTodo !== todo ?  
+                      <button
+                        onClick={() => {
+                          setToUpdateTodo(true);
+                          setValue(todo);
+                        }}
+                      >
+                        <i className="fa fa-pencil" aria-hidden="true"></i>
+                      </button> 
+                      : " " }
+
+                      <button onClick={() => deleteTodo(todo)}>
+                        <i className="fa fa-trash" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              {todos.length === 0 && <div className="empty__message">
+                <pre>No todos available at this moment.</pre>
+                <h3>Create new todos.</h3>
+              </div>}
+        </div>
+        <div className="completed__todos">
+          {todos.length > 0 && <h3>Completed</h3>}
+            {completedTodos.map(todo => {
+              return (
+            <div className="todo" key={todo.time}>
+              <div className="todo__details">
+                <pre> Completed On {todo.time}</pre>
+                <span>{todo.value}</span>
+              </div>
               <div className="buttons">
-                { updateWalaTodo !== todo ?  
-                <button
-                  onClick={() => {
-                    setToUpdateTodo(true);
-                    setValue(todo);
-                  }}
-                >
-                  <i class="fa fa-pencil" aria-hidden="true"></i>
-                </button> : " " }
-                <button onClick={() => deleteTodo(todo)}>
-                <i class="fa fa-trash" aria-hidden="true"></i>
+                <button onClick={() => deleteCompleted(todo.value)}>
+                  <i className="fa fa-times" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
-          );
-        })}
+          )})}
+          {completedTodos.length === 0 && todos.length > 0 && <div className="empty__message">
+                <pre>No data found.</pre>
+              </div>} 
+        </div>
+      </div>
     </div>
   );
 }
