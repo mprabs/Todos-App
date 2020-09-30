@@ -1,12 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2&family=Press+Start+2P&display=swap');
  .App {
      display: grid;
      place-items: center;
     color: white;
+    font-family: 'Baloo Tammudu 2', cursive;
  }
 
  .App .heading {
      text-align: center;
  }
+
+.App .heading h2 {
+    font-family: 'Press Start 2P', cursive;
+}
 
  .App form {
     height: 50px;
@@ -91,6 +97,7 @@ form input:focus, form button:focus {
     font-size: 100%;
     opacity: 0.7;
     flex: 1;
+    cursor: pointer;
 }
 
 .todo .buttons button:focus {
@@ -98,7 +105,7 @@ form input:focus, form button:focus {
 }
 
 .todo .buttons button:hover {
-    background-color: wheat;
+    background-color: rgb(208, 222, 243);
 }
 
 .todo .fa-pencil {
@@ -143,4 +150,14 @@ form input:focus, form button:focus {
 
 .completed__todos .todo__details span {
     text-decoration: line-through;
+}
+
+.pending__todos .todo:hover {
+    box-shadow: 0 1px 3px 1px rgb(126, 126, 238) inset;
+    background-color: lightblue;
+}
+
+.completed__todos .todo:hover {
+    background-color: lightgreen;
+    box-shadow: 0 1px 3px 1px green inset;
 }

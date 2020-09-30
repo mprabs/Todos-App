@@ -92,9 +92,7 @@ function App() {
   }
 
   function deleteCompleted(todo) {
-    const todoList = [...completedTodos];
-    const index = todoList.indexOf(todo);
-    todoList.splice(index, 1);
+    const todoList = completedTodos.filter(item => item.value !== todo)
     setCompletedTodos([...todoList]);
   }
 
@@ -114,7 +112,7 @@ function App() {
       </form>
       <div className="todos">
         <div className="pending__todos">
-            {todos.length > 0 && <h3>Pending</h3>}
+            {todos.length > 0 && <h3 style={{ color: 'blue' }}>Pending</h3>}
             {todos &&
               todos.map((todo) => {
                 return (
@@ -152,7 +150,7 @@ function App() {
               </div>}
         </div>
         <div className="completed__todos">
-          {todos.length > 0 && <h3>Completed</h3>}
+          {todos.length > 0 && <h3 style={{ color: 'green' }}>Completed</h3>}
             {completedTodos.map(todo => {
               return (
             <div className="todo" key={todo.time}>
