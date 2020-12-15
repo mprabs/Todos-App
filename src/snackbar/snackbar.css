@@ -12,4 +12,15 @@
     right: 40px;
     z-index: 99999;
     color: white;
+    animation-name: snackbar;
+    animation-duration: 4s;
+}
+
+@keyframes snackbar {
+    from {
+        visibility:visible;
+    }
+    to {
+        visibility: hidden;
+    }
 }

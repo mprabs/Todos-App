@@ -1,7 +1,7 @@
 import React from 'react'
 import './snackbar.css'
 
-export default function snackbar({ text }) {
+export default function Snackbar({ text }) {
     return (
         <div className="bar" id="bar">
             {text}
